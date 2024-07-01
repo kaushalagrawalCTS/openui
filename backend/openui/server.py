@@ -50,6 +50,8 @@ from pathlib import Path
 from typing import Optional
 import traceback
 import os
+from openai import AzureOpenAI
+from openai import AsyncAzureOpenAI
 
 
 @asynccontextmanager
@@ -69,8 +71,13 @@ app = FastAPI(
     description="API for proxying LLM requests to different services",
 )
 
-openai = AsyncOpenAI(base_url=config.OPENAI_BASE_URL, api_key=config.OPENAI_API_KEY)
-
+# openai = AsyncOpenAI(base_url=config.OPENAI_BASE_URL, api_key=config.OPENAI_API_KEY)
+# openai = AsyncOpenAI(base_url="https://codedocumentation.openai.azure.com/", api_key="70683718b85747ea89724db4214873e7")
+client = AsyncAzureOpenAI(
+  azure_endpoint="https://codedocumentation.openai.azure.com/",
+  api_key="70683718b85747ea89724db4214873e7",  
+  api_version="2024-02-01"
+)
 litellm = AsyncOpenAI(
     api_key=config.LITELLM_API_KEY,
     base_url=config.LITELLM_BASE_URL,
@@ -136,7 +143,8 @@ async def chat_completions(
                 raise HTTPException(status=400, data="Model not supported")
             response: AsyncStream[
                 ChatCompletionChunk
-            ] = await openai.chat.completions.create(
+            # ] = await openai.chat.completions.create(
+            ] = await client.chat.completions.create(
                 **data,
             )
             # gpt-4 tokens are 20x more expensive
