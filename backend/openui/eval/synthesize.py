@@ -3,7 +3,12 @@ import json
 import asyncio
 
 from openai import AsyncOpenAI
-
+from openai import AsyncAzureOpenAI
+client = AsyncAzureOpenAI(
+  azure_endpoint="https://codedocumentation.openai.azure.com/",
+  api_key="70683718b85747ea89724db4214873e7",  
+  api_version="2024-02-01"
+)
 openai = AsyncOpenAI()
 
 SYSTEM_PROMPT = """You're a fun and creative web developer. Given a description and name of a component, I want a list of json that contain "emoji", "name", and "prompt" properties.  At least 3-5 but upto 10.  The "emoji" should represent the idea of the component and the question should be what a user would ask for, i.e.
@@ -37,7 +42,7 @@ async def synth(row):
         return None
     else:
         print(f"Generating emoji for: {row['name']} - {row['description']}")
-        completion = await openai.chat.completions.create(
+        completion = await client.chat.completions.create(
             messages=[
                 {
                     "role": "system",

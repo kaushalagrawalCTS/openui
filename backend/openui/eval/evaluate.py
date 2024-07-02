@@ -2,6 +2,7 @@ import asyncio
 import sys
 import textwrap
 from weave import Evaluation, Model
+from openai import AzureOpenAI
 
 # from .model import EvaluateQualityModel
 import weave
@@ -48,7 +49,7 @@ class EvaluateQualityModel(Model):
 
         pt("Actually predicting", input["emoji"], input["name"] + ":", input["prompt"])
         pt("Desktop:", input["desktop_img"], "Mobile:", input["mobile_img"])
-        client = OpenAI()
+        client = AzureOpenAI()
         user_message = f"""{input['prompt']}
 ---
 name: {input['name']}

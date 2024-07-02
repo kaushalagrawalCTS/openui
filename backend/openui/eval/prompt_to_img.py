@@ -8,6 +8,12 @@ import sys
 from openui.util import gen_screenshots
 
 from openai import AsyncOpenAI
+from openai import AsyncAzureOpenAI
+client = AsyncAzureOpenAI(
+  azure_endpoint="https://codedocumentation.openai.azure.com/",
+  api_key="70683718b85747ea89724db4214873e7",  
+  api_version="2024-02-01"
+)
 
 SYSTEM_PROMPT = """You're a frontend web developer that specializes in tailwindcss. Given a description, generate HTML with tailwindcss. You should support both dark and light mode. It should render nicely on desktop, tablet, and mobile. Keep your responses concise and just return HTML that would appear in the <body> no need for <head>. Use placehold.co for placeholder images. If the user asks for interactivity, use modern ES6 javascript and native browser apis to handle events.
 
@@ -58,9 +64,9 @@ def extract_html(result: str):
     return fm
 
 
-async def synth(prompt, model="gpt-3.5-turbo"):
+async def synth(prompt, model="gpt-4o"):
     print(f"Generating HTML for: {prompt}")
-    completion = await openai.chat.completions.create(
+    completion = await client.chat.completions.create(
         messages=[
             {
                 "role": "system",
@@ -81,7 +87,7 @@ async def synth(prompt, model="gpt-3.5-turbo"):
     return parsed
 
 
-async def main(model="gpt-3.5-turbo"):
+async def main(model="gpt-4o"):
     eval_csv = Path(__file__).parent / "datasets" / "eval.csv"
     gen_json = Path(__file__).parent / "datasets" / f"{model}.json"
     screenshot_dir = Path(__file__).parent / "datasets" / model

@@ -2,6 +2,7 @@ from weave import Model
 import weave
 import json
 from pathlib import Path
+from openai import AzureOpenAI
 
 import base64
 
@@ -28,7 +29,7 @@ class EvaluateQualityModel(Model):
     async def predict(self, input: dict) -> dict:
         from openai import OpenAI
 
-        client = OpenAI()
+        client = AzureOpenAI()
         user_message = f"""prompt: {input['prompt']}
 name: {input['name']}
 emoji: {input['emoji']}

@@ -57,8 +57,10 @@ CORS_ORIGINS = os.getenv(
 
 # Model providers
 OLLAMA_HOST = os.getenv("OLLAMA_HOST", "http://127.0.0.1:11434")
-OPENAI_BASE_URL = os.getenv("OPENAI_BASE_URL", "https://api.openai.com/v1")
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "xxx")
+# OPENAI_BASE_URL = os.getenv("OPENAI_BASE_URL", "https://api.openai.com/v1")
+# OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "xxx")
+OPENAI_BASE_URL = "https://codedocumentation.openai.azure.com/"
+OPENAI_API_KEY = "70683718b85747ea89724db4214873e7"
 GROQ_BASE_URL = os.getenv("GROQ_BASE_URL", "https://api.groq.com/openai/v1")
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 LITELLM_API_KEY = os.getenv("LITELLM_API_KEY", "xxx")
