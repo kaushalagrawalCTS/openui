@@ -403,7 +403,7 @@ async def get_openai_models():
     try:
         await openai.models.list()
         # We only support 3.5 and 4 for now
-        return ["gpt-3.5-turbo", "gpt-4o", "gpt-4-turbo"]
+        return ["gpt-3.5-turbo", "gpt-4o-mini", "gpt-4o", "gpt-4-turbo"]
     except Exception:
         logger.warning("Couldn't connect to OpenAI at %s", config.OPENAI_BASE_URL)
         return []
@@ -603,10 +603,11 @@ def check_wandb_auth():
 wandb_enabled = check_wandb_auth()
 
 if not wandb_enabled:
-    from weave.monitoring import openai as wandb_openai
-
-    wandb_openai.unpatch()
-
+    try:
+        from weave.integrations.openai.openai_sdk import openai_patcher
+        openai_patcher.undo_patch()
+    except Exception:
+        pass
 
 class Server(uvicorn.Server):
     # TODO: this still isn't working for some reason, can't ctrl-c when not in dev mode
