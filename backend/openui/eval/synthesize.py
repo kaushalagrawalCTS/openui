@@ -7,9 +7,9 @@ from openai import AsyncAzureOpenAI
 client = AsyncAzureOpenAI(
   azure_endpoint="https://codedocumentation.openai.azure.com/",
   api_key="70683718b85747ea89724db4214873e7",  
-  api_version="2024-02-01"
+  api_version="2024-02-15-preview"
 )
-openai = AsyncOpenAI()
+openai = AsyncAzureOpenAI()
 
 SYSTEM_PROMPT = """You're a fun and creative web developer. Given a description and name of a component, I want a list of json that contain "emoji", "name", and "prompt" properties.  At least 3-5 but upto 10.  The "emoji" should represent the idea of the component and the question should be what a user would ask for, i.e.
 
@@ -57,7 +57,7 @@ desc: {row['description']}
             ],
             max_tokens=2048,
             temperature=0.5,
-            model="gpt-3.5-turbo-1106",
+            model="gpt-4o",
             response_format={"type": "json_object"},
         )
         result = completion.choices[0].message.content

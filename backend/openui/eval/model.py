@@ -27,9 +27,13 @@ class EvaluateQualityModel(Model):
 
     @weave.op()
     async def predict(self, input: dict) -> dict:
-        from openai import OpenAI
+        from openai import AzureOpenAI
 
-        client = AzureOpenAI()
+        client = AzureOpenAI(
+  azure_endpoint="https://codedocumentation.openai.azure.com/",
+  api_key="70683718b85747ea89724db4214873e7",  
+  api_version="2024-02-15-preview"
+)
         user_message = f"""prompt: {input['prompt']}
 name: {input['name']}
 emoji: {input['emoji']}

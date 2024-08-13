@@ -18,6 +18,7 @@ const openai = new MyOpenAI({
 	dangerouslyAllowBrowser: true
 })
 
+
 export type Action = 'create' | 'refine'
 interface CreateOptions {
 	model: string
@@ -115,7 +116,7 @@ emoji: 🎉
 		if (image) {
 			// TODO: configurable
 			if (model.startsWith('gpt')) {
-				model = 'gpt-4o-mini'
+				model = 'gpt-4o'
 			}
 			const textImageRequirements = query
 				? `The following are some special requirements: \n ${query}`
@@ -156,7 +157,7 @@ emoji: 🎉
 		if (image) {
 			// TODO: configurable
 			if (model.startsWith('gpt')) {
-				model = 'gpt-4o-mini'
+				model = 'gpt-4o'
 			}
 			messages.push({
 				role: 'user',

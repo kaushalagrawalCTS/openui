@@ -6,7 +6,7 @@ import textwrap
 import yaml
 import mistletoe
 from typing import Optional
-from openai import AsyncOpenAI, RateLimitError
+from openai import AsyncOpenAI, RateLimitError,AsyncAzureOpenAI
 from weave import Evaluation, Model, Dataset
 
 # from .model import EvaluateQualityModel
@@ -96,7 +96,7 @@ emoji: 🎉
 
 class OpenUIModel(PromptModel):
     prompt_template: str
-    model_name: Optional[str] = "gpt-3.5-turbo"
+    model_name: Optional[str] = "gpt-4o"
     take_screenshot: Optional[bool] = True
     temp: Optional[float] = 0.3
     _iteration: int = 0
@@ -126,7 +126,7 @@ class OpenUIModel(PromptModel):
                 base_url="https://api.fireworks.ai/inference/v1",
             )
         else:
-            return AsyncOpenAI()
+            return AsyncAzureOpenAI()
 
     @property
     def model(self):
@@ -284,7 +284,11 @@ class OpenUIScoringModel(Model):
 
     @weave.op()
     async def predict(self, prompt: str, prediction: dict) -> dict:
-        client = AsyncOpenAI()
+        client = AsyncAzureOpenAI(
+  azure_endpoint="https://codedocumentation.openai.azure.com/",
+  api_key="70683718b85747ea89724db4214873e7",  
+  api_version="2024-02-15-preview"
+)
 
         user_message = f"""{prompt}
 ---
@@ -379,7 +383,7 @@ async def run(row=0, bad=False):
     pt("Result:", res)
 
 
-async def eval(mod="gpt-3.5-turbo"):
+async def eval(mod="gpt-4o"):
     pt("Initializing weave")
     weave.init("openui-dev")
     model = OpenUIModel(prompt_template=SYSTEM_PROMPT, model_name=mod)
@@ -421,7 +425,7 @@ if __name__ == "__main__":
     if len(sys.argv) > 1:
         mod = sys.argv[1]
     else:
-        mod = "gpt-3.5-turbo"
+        mod = "gpt-4o"
     if os.getenv("HOGWILD"):
         run_prompt_search(mod)
     else:

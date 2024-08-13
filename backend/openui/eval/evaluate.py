@@ -45,11 +45,15 @@ class EvaluateQualityModel(Model):
 
     @weave.op()
     async def predict(self, input: dict) -> dict:
-        from openai import OpenAI
+        from openai import AzureOpenAI
 
         pt("Actually predicting", input["emoji"], input["name"] + ":", input["prompt"])
         pt("Desktop:", input["desktop_img"], "Mobile:", input["mobile_img"])
-        client = AzureOpenAI()
+        client = AzureOpenAI(
+  azure_endpoint="https://codedocumentation.openai.azure.com/",
+  api_key="70683718b85747ea89724db4214873e7",  
+  api_version="2024-02-15-preview"
+)
         user_message = f"""{input['prompt']}
 ---
 name: {input['name']}
@@ -173,7 +177,7 @@ async def run(row=0, bad=False):
     pt("Result:", res)
 
 
-async def eval(ds="gpt-3.5-turbo"):
+async def eval(ds="gpt-4o"):
     pt("Initializing weave")
     weave.init("openui-test-21")
     pt("Loading dataset", ds)
@@ -191,5 +195,5 @@ if __name__ == "__main__":
     if len(sys.argv) > 1:
         ds = sys.argv[1].replace(":", "-")
     else:
-        ds = "gpt-3.5-turbo"
+        ds = "gpt-4o"
     asyncio.run(eval(ds))

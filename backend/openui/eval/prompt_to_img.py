@@ -12,7 +12,7 @@ from openai import AsyncAzureOpenAI
 client = AsyncAzureOpenAI(
   azure_endpoint="https://codedocumentation.openai.azure.com/",
   api_key="70683718b85747ea89724db4214873e7",  
-  api_version="2024-02-01"
+  api_version="2024-02-15-preview"
 )
 
 SYSTEM_PROMPT = """You're a frontend web developer that specializes in tailwindcss. Given a description, generate HTML with tailwindcss. You should support both dark and light mode. It should render nicely on desktop, tablet, and mobile. Keep your responses concise and just return HTML that would appear in the <body> no need for <head>. Use placehold.co for placeholder images. If the user asks for interactivity, use modern ES6 javascript and native browser apis to handle events.
@@ -121,11 +121,15 @@ if __name__ == "__main__":
     if len(sys.argv) > 1:
         model = sys.argv[1]
     else:
-        model = "gpt-3.5-turbo"
+        model = "gpt-4o"
     if model.startswith("ollama/"):
         model = model.replace("ollama/", "")
         openai = AsyncOpenAI(base_url="http://localhost:11434/v1")
     else:
-        openai = AsyncOpenAI()
+        openai =AsyncAzureOpenAI(
+  azure_endpoint="https://codedocumentation.openai.azure.com/",
+  api_key="70683718b85747ea89724db4214873e7",  
+  api_version="2024-02-15-preview"
+)
 
     asyncio.run(main(model))

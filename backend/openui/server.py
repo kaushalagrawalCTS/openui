@@ -76,7 +76,7 @@ app = FastAPI(
 client = AsyncAzureOpenAI(
   azure_endpoint="https://codedocumentation.openai.azure.com/",
   api_key="70683718b85747ea89724db4214873e7",  
-  api_version="2024-02-01"
+  api_version="2024-02-15-preview"
 )
 litellm = AsyncOpenAI(
     api_key=config.LITELLM_API_KEY,
@@ -132,6 +132,7 @@ async def chat_completions(
             detail="You've exceeded our usage quota, come back tomorrow to generate more UI.",
         )
     try:
+        print("#############INSIDE OPENAI TRY##############")
         data = await request.json()  # chat_request.model_dump(exclude_unset=True)
         input_tokens = count_tokens(data["messages"])
         # TODO: we always assume 4096 max tokens (random fudge factor here)
@@ -139,14 +140,17 @@ async def chat_completions(
         # TODO: refactor all these blocks into one once Ollama supports vision
         # OpenAI Models
         if data.get("model").startswith("gpt"):
-            if data["model"] == "gpt-4" or data["model"] == "gpt-4-32k":
-                raise HTTPException(status=400, data="Model not supported")
+            print("###DATA#####",data)
+            print("#############INSIDE 1st IF##############")
+            # if data["model"] == "":
+            #     print("#############INSIDE SECOND IF##############")
+            #     raise HTTPException(status=400, data="Model not supported")
             response: AsyncStream[
                 ChatCompletionChunk
-            # ] = await openai.chat.completions.create(
             ] = await client.chat.completions.create(
                 **data,
             )
+            print("###RESPONSE######################",response)
             # gpt-4 tokens are 20x more expensive
             multiplier = 20 if "gpt-4" in data["model"] else 1
             return StreamingResponse(
@@ -155,6 +159,7 @@ async def chat_completions(
             )
         # Groq Models
         elif data.get("model").startswith("groq/"):
+            print("#############INSIDE GROQ TRY##############")
             data["model"] = data["model"].replace("groq/", "")
             if groq is None:
                 raise HTTPException(status=500, detail="Groq API key is not set.")
@@ -169,6 +174,7 @@ async def chat_completions(
             )
         # Litellm Models
         elif data.get("model").startswith("litellm/"):
+            print("#############INSIDE LITELLM TRY##############")
             data["model"] = data["model"].replace("litellm/", "")
             if litellm is None:
                 raise HTTPException(status=500, detail="LiteLLM API key is not set.")
@@ -183,6 +189,7 @@ async def chat_completions(
             )
         # Ollama Time
         elif data.get("model").startswith("ollama/"):
+            print("#############INSIDE OLLAMA TRY##############")
             data["model"] = data["model"].replace("ollama/", "")
             data.pop("max_tokens")
             data["messages"] = openai_to_ollama(data)
@@ -210,6 +217,7 @@ async def chat_completions(
 
             return StreamingResponse(gen(), media_type="text/event-stream")
         elif data.get("model").startswith("dummy"):
+            print("#############INSIDE LAST TRY##############")
             return StreamingResponse(
                 DummyStreamGenerator(data), media_type="text/event-stream"
             )
@@ -401,9 +409,11 @@ async def vote(request: Request, payload: VoteRequest):
 
 async def get_openai_models():
     try:
-        await openai.models.list()
+        await client.models.list()
+        print("###########INSIDE OPENAI MODEL#######",client.models.list())
         # We only support 3.5 and 4 for now
-        return ["gpt-3.5-turbo", "gpt-4o-mini", "gpt-4o", "gpt-4-turbo"]
+        # return ["gpt-3.5-turbo", "gpt-4o-mini", "gpt-4o", "gpt-4-turbo"]
+        return ["gpt-4o"]
     except Exception:
         logger.warning("Couldn't connect to OpenAI at %s", config.OPENAI_BASE_URL)
         return []

@@ -237,13 +237,13 @@ emoji: 🎉
 
 <button class="bg-blue-500 text-white p-2 rounded-lg">Click me</button>
 
-`);const u=[{role:"system",content:r}];let c=a??"";if(a&&n.startsWith("ollama/")&&(c=a.toString().split(",").pop()??""),l==="create")if(a){n.startsWith("gpt")&&(n="gpt-4o-mini");const v=s?`The following are some special requirements: 
+`);const u=[{role:"system",content:r}];let c=a??"";if(a&&n.startsWith("ollama/")&&(c=a.toString().split(",").pop()??""),l==="create")if(a){n.startsWith("gpt")&&(n="gpt-4o");const v=s?`The following are some special requirements: 
  ${s}`:"";u.push({role:"user",content:[{type:"text",text:`This is a screenshot of a web component I want to replicate.  Please generate HTML for it.
  ${v}`},{type:"image_url",image_url:{url:c}}]})}else u.push({role:"user",content:s});else{let S=/<!--FIX (\(\d+\)): (.+)-->/g.test(o)?"Address the FIX comments.":s;S===""&&(S="Lets make this look more professional");const p=`Given the following HTML${a?" and image":""}:
 
 ${o}
 
-${S}`;console.log("Sending instructions:",p),a?(n.startsWith("gpt")&&(n="gpt-4o-mini"),u.push({role:"user",content:[{type:"text",text:p},{type:"image_url",image_url:{url:c}}]})):u.push({role:"user",content:p})}const f=await Nx.chat.completions.create({model:n,messages:u,temperature:i,stream:!0,max_tokens:i$});let d="";for await(const v of f){const S=((g=(h=v.choices[0])==null?void 0:h.delta)==null?void 0:g.content)??"";d+=S,t(S)}return d}const s$=`You're a frontend web developer that specializes in $FRAMEWORK.
+${S}`;console.log("Sending instructions:",p),a?(n.startsWith("gpt")&&(n="gpt-4o"),u.push({role:"user",content:[{type:"text",text:p},{type:"image_url",image_url:{url:c}}]})):u.push({role:"user",content:p})}const f=await Nx.chat.completions.create({model:n,messages:u,temperature:i,stream:!0,max_tokens:i$});let d="";for await(const v of f){const S=((g=(h=v.choices[0])==null?void 0:h.delta)==null?void 0:g.content)??"";d+=S,t(S)}return d}const s$=`You're a frontend web developer that specializes in $FRAMEWORK.
 Given html and javascript, generate a $FRAMEWORK component. Factor the code into smaller
 components if necessary. Keep all code in one file. Use hooks and put tailwind class strings
 that are repeated atleast 3 times into a shared constant. Leave comments when necessary.`;async function nL(e,t){var f,d;const{framework:n,model:r,temperature:i,html:s}=e,a=[{role:"system",content:s$.replaceAll("$FRAMEWORK",n)}],l=`Please turn this into a ${n} component.`,u=`Given the following HTML:
