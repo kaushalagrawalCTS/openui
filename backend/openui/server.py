@@ -134,6 +134,7 @@ async def chat_completions(
     try:
         print("#############INSIDE OPENAI TRY##############")
         data = await request.json()  # chat_request.model_dump(exclude_unset=True)
+        logger.debug(f"Request data: {data}")
         input_tokens = count_tokens(data["messages"])
         # TODO: we always assume 4096 max tokens (random fudge factor here)
         data["max_tokens"] = 4096 - input_tokens - 20
@@ -145,11 +146,15 @@ async def chat_completions(
             # if data["model"] == "":
             #     print("#############INSIDE SECOND IF##############")
             #     raise HTTPException(status=400, data="Model not supported")
+            
+            data["model"] = "gpt-4o"
+            print("#############MODEL########",data["model"])
             response: AsyncStream[
                 ChatCompletionChunk
             ] = await client.chat.completions.create(
                 **data,
             )
+            logger.debug(f"API response: {response}")
             print("###RESPONSE######################",response)
             # gpt-4 tokens are 20x more expensive
             multiplier = 20 if "gpt-4" in data["model"] else 1
@@ -406,14 +411,21 @@ async def vote(request: Request, payload: VoteRequest):
     )
     return payload
 
+async def list_models(client):
+    models = []
+    paginator = client.models.list()
+    async for model in paginator:
+        models.append(model)
+    return models
 
 async def get_openai_models():
     try:
         await client.models.list()
-        print("###########INSIDE OPENAI MODEL#######",client.models.list())
+        models = await list_models(client)
+        print("###########INSIDE OPENAI MODEL#######",models)
         # We only support 3.5 and 4 for now
         # return ["gpt-3.5-turbo", "gpt-4o-mini", "gpt-4o", "gpt-4-turbo"]
-        return ["gpt-4o"]
+        return ["gpt-4o","gpt-4o-mini"]
     except Exception:
         logger.warning("Couldn't connect to OpenAI at %s", config.OPENAI_BASE_URL)
         return []
